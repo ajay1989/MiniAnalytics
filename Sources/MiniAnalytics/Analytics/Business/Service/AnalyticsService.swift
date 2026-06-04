@@ -9,9 +9,11 @@ import Foundation
 
 public actor AnalyticsService: AnalyticsServiceProtocol {
     private let repository: EventRepositoryProtocol
-    
-    init(repository: EventRepositoryProtocol) {
+    private let retryPolicy: RetryPolicy
+
+    init(repository: EventRepositoryProtocol, retryPolicy: RetryPolicy = .default) {
         self.repository = repository
+        self.retryPolicy = retryPolicy
     }
     
     public static func create(endpointURL: URL) throws -> AnalyticsService {
@@ -28,6 +30,8 @@ public actor AnalyticsService: AnalyticsServiceProtocol {
     }
     
     public func flush() async throws {
-        try await repository.flush()
+        try await retryPolicy.execute {
+            try await self.repository.flush()
+        }
     }
 }
