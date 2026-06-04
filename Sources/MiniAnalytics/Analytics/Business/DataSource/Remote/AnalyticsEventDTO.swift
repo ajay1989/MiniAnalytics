@@ -19,4 +19,11 @@ struct AnalyticsEventDTO: Codable, Sendable {
         self.properties = event.properties
         self.timestamp = ISO8601DateFormatter().string(from: event.timestamp)
     }
+
+    init(id: String, name: String, properties: [String: String], timestamp: String) {
+        self.id = id
+        self.name = name
+        self.properties = properties
+        self.timestamp = timestamp
+    }
 }
